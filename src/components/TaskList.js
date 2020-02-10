@@ -1,6 +1,7 @@
 import React from "react";
 import TaskItem from "./TaskList/TaskItem";
 import { connect } from "react-redux";
+import * as actions from "./../actions/index";
 
 class TaskList extends React.Component {
     constructor(props) {
@@ -13,23 +14,65 @@ class TaskList extends React.Component {
 
     handleChange = event => {
         let name = event.target.name;
-        let value = event.target.value;
+        let value =
+            name === "checkbox" ? event.target.checked : event.target.value;
         if (["-1", "0", "1"].indexOf(value) > -1) value = Number(value);
 
         this.setState({ [name]: value });
         this.props.filter({
-            filterName: name === "filterName" ? value : this.state.filterName,
-            filterStatus:
-                name === "filterStatus" ? value : this.state.filterStatus
+            name: name === "filterName" ? value : this.state.filterName,
+            status: name === "filterStatus" ? value : this.state.filterStatus
         });
     };
 
     render() {
-        console.log("render() in TaskList");
-        let { tasks } = this.props;
+        let { filterName, filterStatus } = this.state;
+        let { tasks, filterTable, searchTask, sort } = this.props;
+
+        if (filterTable) {
+            if (filterTable.name !== "") {
+                tasks = tasks.filter(task => {
+                    let regex = new RegExp(
+                        "\\b" + filterTable.name.toLowerCase(),
+                        "g"
+                    );
+                    return regex.test(task.name.toLowerCase());
+                });
+            }
+            if (filterTable.status !== -1)
+                tasks = tasks.filter(task => {
+                    if (filterTable.status === 0) return task.status === false;
+                    else return task.status === true;
+                });
+        }
+
+        if (searchTask !== "") {
+            tasks = tasks.filter(task => {
+                let regex = new RegExp("\\b" + searchTask.toLowerCase(), "g");
+                return regex.test(task.name.toLowerCase());
+            });
+        }
+
+        if (sort.by === "name") {
+            tasks = tasks.sort((a, b) => {
+                let nameA = a.name.toLowerCase();
+                let nameB = b.name.toLowerCase();
+
+                if (nameA > nameB) return sort.value;
+                if (nameA < nameB) return -sort.value;
+                return 0;
+            });
+        }
+
+        if (sort.by === "status") {
+            tasks = tasks.sort((a, b) => {
+                if (a.status > b.status) return -sort.value;
+                if (a.status < b.status) return sort.value;
+                return 0;
+            });
+        }
 
         let tasksView = tasks.map((task, idx) => {
-            console.log("map array in TaskList");
             return (
                 <TaskItem
                     key={task.id}
@@ -39,8 +82,6 @@ class TaskList extends React.Component {
                 />
             );
         });
-
-        let { filterName, filterStatus } = this.state;
 
         return (
             <table className="table table-bordered">
@@ -85,11 +126,20 @@ class TaskList extends React.Component {
     }
 }
 
-// first argumnet of mapStateToProps called state === store.getState;
 const mapStateToProps = state => {
-    console.log("mapStateToProps in TaskList");
     return {
-        tasks: state.tasks
+        tasks: state.tasks,
+        filterTable: state.filterTable,
+        searchTask: state.searchTask,
+        sort: state.sort
     };
 };
-export default connect(mapStateToProps, null)(TaskList);
+
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        filter: filterInput => {
+            dispatch(actions.filterTask(filterInput));
+        }
+    };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(TaskList);

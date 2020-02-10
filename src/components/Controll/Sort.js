@@ -1,4 +1,6 @@
 import React from "react";
+import { connect } from "react-redux";
+import * as actions from "./../../actions/index";
 
 class Sort extends React.Component {
     constructor(props) {
@@ -18,7 +20,7 @@ class Sort extends React.Component {
                 value: sortValue
             }
         });
-        this.props.sortByValue(sortBy, sortValue);
+        this.props.sort({ by: sortBy, value: sortValue });
     };
 
     render() {
@@ -83,4 +85,12 @@ class Sort extends React.Component {
     }
 }
 
-export default Sort;
+let mapDispatchToProps = (dispatch, props) => {
+    return {
+        sort: obj => {
+            dispatch(actions.sort(obj));
+        }
+    };
+};
+
+export default connect(null, mapDispatchToProps)(Sort);

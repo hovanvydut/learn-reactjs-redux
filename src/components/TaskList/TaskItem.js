@@ -9,7 +9,7 @@ class TaskItem extends React.Component {
 
     handleEdit = task => {
         this.props.onEditTask(task);
-        // this.props.onOpenFrom();
+        this.props.onOpenFrom();
     };
 
     handleDeleteTask = id => {
@@ -18,7 +18,6 @@ class TaskItem extends React.Component {
     };
 
     render() {
-        console.log("render()s in TaskItem");
         let { task, index, onUpdateStatus } = this.props;
 
         // true: kich hoat, false: an
@@ -34,7 +33,7 @@ class TaskItem extends React.Component {
             <button
                 type="button"
                 className="btn btn-success d-block mx-auto"
-                onClick={() => onUpdateStatus(task)}
+                onClick={() => onUpdateStatus(task.id)}
             >
                 Ẩn
             </button>
@@ -67,13 +66,6 @@ class TaskItem extends React.Component {
         );
     }
 }
-
-let mapStateToProps = state => {
-    console.log("mapStateToProps in TaskItem");
-    return {
-        abc: state
-    };
-};
 
 let mapDispatchToProps = (dispatch, props) => {
     return {

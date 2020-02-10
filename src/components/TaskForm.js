@@ -23,17 +23,16 @@ class TaskForm extends React.Component {
 
     handleSubmit = event => {
         event.preventDefault();
-        /* if (this.props.taskEditing) {
-            this.props.updateTask(this.state);
+        if (this.props.itemNeedEdit.id) {
+            this.props.onUpdateTask(this.state);
         } else {
-            this.props.addTask(this.state);
-        } */
-        this.props.onAddTask(this.state);
-        this.clearForm();
+            this.props.onAddTask(this.state);
+        }
+        this.resetStateInTaskForm();
         this.props.onCloseForm();
     };
 
-    clearForm = () => {
+    resetStateInTaskForm = () => {
         this.setState({
             id: "",
             name: "",
@@ -42,34 +41,33 @@ class TaskForm extends React.Component {
     };
 
     UNSAFE_componentWillMount() {
-        // console.log("UNSAFE_componentWillMount");
-        if (this.props.taskEditing) {
+        if (this.props.itemNeedEdit.id) {
             this.setState({
-                id: this.props.taskEditing.id,
-                name: this.props.taskEditing.name,
-                status: this.props.taskEditing.status
+                id: this.props.itemNeedEdit.id,
+                name: this.props.itemNeedEdit.name,
+                status: this.props.itemNeedEdit.status
             });
         }
     }
     UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps && nextProps.taskEditing) {
+        if (nextProps && nextProps.itemNeedEdit.id) {
             this.setState({
-                id: nextProps.taskEditing.id,
-                name: nextProps.taskEditing.name,
-                status: nextProps.taskEditing.status
+                id: nextProps.itemNeedEdit.id,
+                name: nextProps.itemNeedEdit.name,
+                status: nextProps.itemNeedEdit.status
             });
-        } else if (nextProps && nextProps.taskEditing === null) {
+        } else {
+            console.log("bbb");
             this.setState({ id: "", name: "", status: false });
         }
     }
     render() {
-        console.log("render() in TaskForm");
         let { onCloseForm } = this.props;
 
         return (
             <div className="card border-primary">
                 <div className="card-header">
-                    {this.props.taskEditing
+                    {this.props.itemNeedEdit.id
                         ? "Sửa công việc"
                         : "Thêm công việc"}
                     <i
@@ -112,7 +110,7 @@ class TaskForm extends React.Component {
                             <button
                                 type="button"
                                 className="btn btn-danger"
-                                onClick={this.clearForm}
+                                onClick={this.resetStateInTaskForm}
                             >
                                 <i className="fas fa-times mr-1"></i>
                                 Huỷ bỏ
@@ -126,8 +124,9 @@ class TaskForm extends React.Component {
 }
 
 const mapStateToProps = state => {
-    console.log("mapStateToProps in TaskForm");
-    return {};
+    return {
+        itemNeedEdit: state.editTask
+    };
 };
 
 const mapDispatchToProps = (dispatch, props) => {
@@ -137,6 +136,9 @@ const mapDispatchToProps = (dispatch, props) => {
         },
         onCloseForm: () => {
             dispatch(actions.closeForm());
+        },
+        onUpdateTask: task => {
+            dispatch(actions.updateTask(task));
         }
     };
 };

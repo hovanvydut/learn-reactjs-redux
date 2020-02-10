@@ -5,9 +5,11 @@ let initialState = data ? data : [];
 
 // reducer
 function myReducer(state = initialState, action) {
+    let idx;
     switch (action.type) {
         case types.LIST_ALL:
             return state;
+
         case types.ADD_TASK:
             let newTask = {
                 id: generateID(),
@@ -17,22 +19,31 @@ function myReducer(state = initialState, action) {
             state.push(newTask);
             window.localStorage.setItem("tasks", JSON.stringify(state));
             return [...state];
+
         case types.UPDATE_STATUS:
-            let idxUpdate = state.findIndex(task => task.id === action.id);
-
-            state[idxUpdate] = {
-                ...state[idxUpdate],
-                status: !state[idxUpdate].status
+            idx = state.findIndex(task => task.id === action.id);
+            state[idx] = {
+                ...state[idx],
+                status: !state[idx].status
             };
+            window.localStorage.setItem("tasks", JSON.stringify(state));
+            return [...state];
 
-            window.localStorage.setItem("tasks", JSON.stringify(state));
-            // state !== [...state] theo kieu so sanh shallow ==> mamStateToProps mới được gọi => hàm render() đc gọi lại vì theoLifeCycle, hàm render được gọi khi có sự thay đổi state hoặc props
-            return [...state];
         case types.DELETE_TASK:
-            let idxDelete = state.findIndex(task => task.id === action.id);
-            state.splice(idxDelete, 1);
+            idx = state.findIndex(task => task.id === action.id);
+            state.splice(idx, 1);
             window.localStorage.setItem("tasks", JSON.stringify(state));
             return [...state];
+
+        case types.UPDATE_TASK:
+            console.log(action);
+            idx = state.findIndex(task => task.id === action.task.id);
+            state[idx] = {
+                ...action.task
+            };
+            window.localStorage.setItem("tasks", JSON.stringify(state));
+            return [...state];
+
         default:
             return state;
     }

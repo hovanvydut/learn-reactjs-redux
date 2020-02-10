@@ -51,3 +51,31 @@ export const editTask = task => {
         task
     };
 };
+
+export const updateTask = task => {
+    return {
+        type: types.UPDATE_TASK,
+        task
+    };
+};
+
+export const filterTask = filterInput => {
+    return {
+        type: types.FILTER_TASK,
+        filterInput
+    };
+};
+
+export const searchTask = keyWord => {
+    return {
+        type: types.SEARCH,
+        keyWord
+    };
+};
+
+export const sort = sort => {
+    return {
+        type: types.SORT,
+        sort
+    };
+};

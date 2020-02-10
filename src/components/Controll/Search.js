@@ -1,4 +1,6 @@
 import React from "react";
+import { connect } from "react-redux";
+import * as actions from "./../../actions";
 
 class Search extends React.Component {
     constructor(props) {
@@ -7,11 +9,13 @@ class Search extends React.Component {
             keyWord: ""
         };
     }
+
     handleChange = event => {
         this.setState({ keyWord: event.target.value });
     };
-    onSearch = () => {
-        this.props.onSearch(this.state.keyWord);
+
+    handleSearch = () => {
+        this.props.searchTask(this.state.keyWord);
     };
 
     render() {
@@ -28,7 +32,7 @@ class Search extends React.Component {
                     <button
                         className="btn btn-outline-primary"
                         type="button"
-                        onClick={this.onSearch}
+                        onClick={this.handleSearch}
                     >
                         <i className="fa fa-search" />
                         Tìm
@@ -39,4 +43,12 @@ class Search extends React.Component {
     }
 }
 
-export default Search;
+let mapDispatchToProps = (dispatch, props) => {
+    return {
+        searchTask: keyWord => {
+            dispatch(actions.searchTask(keyWord));
+        }
+    };
+};
+
+export default connect(null, mapDispatchToProps)(Search);

@@ -5,10 +5,10 @@ let initialState = {};
 function editTask(state = initialState, action) {
     switch (action.type) {
         case types.EDIT_TASK:
-            console.log(action);
-            console.log("in editTask Reducer");
-            state = Object.assign({}, action.task);
-            return { ...state };
+            return Object.assign({}, action.task);
+        case "RESET_EDIT_ITEM":
+            state = {};
+            return {};
         default:
             return state;
     }
